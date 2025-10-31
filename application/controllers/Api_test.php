@@ -31,19 +31,4 @@ class Api_test extends CI_Controller
 
         print_r($response);
     }
-
-    public function kirim()
-    {
-        $this->load->library('curl');
-
-        $data = [
-            'title' => 'Hello',
-            'body' => 'Ini dari CI3',
-            'userId' => 1
-        ];
-
-        $response = $this->curl->simple_post('https://jsonplaceholder.typicode.com/posts', $data);
-
-        echo $response;
-    }
 }
