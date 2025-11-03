@@ -70,10 +70,10 @@ class Hrd_model extends CI_Model
                     } else {
                         switch ($v) {
                             case 'start':
-                                $start = $input('start');
+                                $start = $input['start'];
                                 break;
                             case 'length':
-                                $length = $input('end');
+                                $length = $input['length'];
                                 break;
                         }
                     }
