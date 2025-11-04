@@ -214,12 +214,6 @@ class Hrd_model extends CI_Model
             [
                 'tanggal' => $data['tgl_absen'],
                 'kar_id' => $data['karyawan_id'],
-                'wherein' => [
-                    [
-                        'field' => $this->verify[$data['status']],
-                        'values' => ['00:00:00']
-                    ]
-                ]
             ],
             'absensi_d'
         );
@@ -236,7 +230,7 @@ class Hrd_model extends CI_Model
     {
         $employees = $this->get_employees(['kar_id' => $data['karyawan_id']]);
         if ($employees) {
-            $employees = $employees[0];
+            $employees = $employees['data'][0];
             $shift = $this->getData(
                 [
                     'id_group' => $employees->group,
