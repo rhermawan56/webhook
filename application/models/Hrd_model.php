@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Hrd_model extends CI_Model
 {
-    private $dbs;
+    private $dbs, $dbs_st;
     private $verify = [
         'masuk' => 'jamin',
         'pulang' => 'jamout'
@@ -13,6 +13,7 @@ class Hrd_model extends CI_Model
     {
         parent::__construct();
         $this->dbs = $this->load->database('hrd', TRUE);
+        $this->dbs_st = $this->load->database('hrd_st', TRUE);
     }
 
     public function get_employees($input)
@@ -31,14 +32,20 @@ class Hrd_model extends CI_Model
         $length = 100;
         $exclude = ['wherein', 'wherenotin', 'raw', 'start', 'length'];
 
-        $data = $this->dbs;
+        if (stripos($input['company'], 'sinar terang') || stripos($input['company'], 'sinarterang')) {
+            $data = $this->dbs_st;
+        } else {
+            $data = $this->dbs;
+        }
 
         if ($input) {
             $dataKeys = array_keys($input);
 
             foreach ($dataKeys as $k => $v) {
                 if (!in_array($v, $exclude)) {
-                    $where[$v] = $input[$v];
+                    if ($v !== 'company') {
+                        $where[$v] = $input[$v];
+                    }
                 } else {
                     if ($v !== 'start' && $v !== 'length') {
                         foreach ($input[$v] as $kw => $vw) {
@@ -228,8 +235,8 @@ class Hrd_model extends CI_Model
 
     private function insertDataAttendance($data)
     {
-        $employees = $this->get_employees(['kar_id' => $data['karyawan_id']]);
-        if ($employees) {
+        $employees = $this->get_employees(['kar_id' => $data['karyawan_id'], 'company' => $data['company']]);
+        if ($employees['data']) {
             $employees = $employees['data'][0];
             $shift = $this->getData(
                 [
@@ -258,13 +265,23 @@ class Hrd_model extends CI_Model
                     'validasi_a' => '0',
                     'del' => '0',
                     'group' => $employees->group,
-                    'shift' => $shift->id_shift,
-                    'lokasi' => '1'
+                    'shift' => $shift->id_shift
                 ];
 
                 $dataInsert[$this->verify[$data['status']]] = $data['jam'];
 
-                return $this->dbs->insert('absensi_d', $dataInsert);
+                if (stripos($data['company'], 'jembes')) {
+                    $dataInsert['lokasi'] = '2';
+                } else {
+                    $dataInsert['lokasi'] = '1';
+                }
+
+                if (stripos($data['company'], 'sinar terang') || stripos($data['company'], 'sinarterang')) {
+                    unset($dataInsert['lokasi']);
+                    return $this->dbs_st->insert('absensi_d', $dataInsert);
+                } else {
+                    return $this->dbs->insert('absensi_d', $dataInsert);
+                }
             }
         }
 
@@ -278,6 +295,11 @@ class Hrd_model extends CI_Model
             "{$this->verify[$data['status']]}" => $data['jam']
         ];
 
-        return $this->dbs->where('idabsensi', $attendance->idabsensi)->update('absensi_d', $updateData);
+        if (stripos($data['company'], 'sinar terang') || stripos($data['company'], 'sinarterang')) {
+            return $this->dbs_st->where('idabsensi', $attendance->idabsensi)->update('absensi_d', $updateData);
+        } else {
+            return $this->dbs->where('idabsensi', $attendance->idabsensi)->update('absensi_d', $updateData);
+        }
+
     }
 }

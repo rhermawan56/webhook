@@ -116,3 +116,25 @@ $db['hrd'] = array(
 	'failover' => array(),
 	'save_queries' => TRUE
 );
+
+$db['hrd_st'] = array(
+	'dsn'	=> '',
+	'hostname' => getenv('DB_HOSTNAME3'),
+	'username' => getenv('DB_USERNAME3'),
+	'password' => getenv('DB_PASSWORD3'),
+	'database' => getenv('DB_DB3'),
+	'dbdriver' => 'mysqli',
+	'dbprefix' => '',
+	'pconnect' => FALSE,
+	'db_debug' => (ENVIRONMENT !== 'production'),
+	'cache_on' => FALSE,
+	'cachedir' => '',
+	'char_set' => 'utf8',
+	'dbcollat' => 'utf8_general_ci',
+	'swap_pre' => '',
+	'encrypt' => FALSE,
+	'compress' => FALSE,
+	'stricton' => FALSE,
+	'failover' => array(),
+	'save_queries' => TRUE
+);
